@@ -3,15 +3,15 @@ import os
 import email
 import imaplib
 from keep_alive import keep_alive
+import random
+
+colors = [0x00ff00, 0x000000]
 
 async def filter_email(msg, message, bodyMsg):
   allEmails = ['shahshubh251@gmail.com', 'shahshubh009@gmail.com']
-
   for e in allEmails:
     if e in msg['From']:
-      await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
       return True
-  
   return False
   
 
@@ -44,8 +44,12 @@ async def listen_new_email(message):
             
             # if(filter_email(msg, message, bodyMsg)):
             #   await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
-
-            await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
+            embedVar = discord.Embed(title="New Email", description=msg["From"], color=random.choice(colors))
+            embedVar.add_field(name="Date", value=msg["Date"], inline=False)
+            embedVar.add_field(name="Subject", value=msg["Subject"], inline=False)
+            embedVar.add_field(name="Body", value=bodyMsg, inline=False)
+            await message.channel.send(embed=embedVar)
+            
             print(" ===============================")
             print(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
             print("===============================\n")
@@ -57,6 +61,9 @@ async def listen_email_handler(message):
     await listen_new_email(message)
   except:
     await message.channel.send("Some error occured !!")
+
+
+
 
 client = discord.Client()
 
@@ -76,7 +83,7 @@ result, data = server.search(None, 'UnSeen')
 uids = [int(s) for s in data[0].split()]
 if uids:
   uid_max = max(uids)
-  # Initialize `uid_max`. Any UID less than or equal to `uid_max` will be ignored subsequently.
+  # Initialize `uid_max`. Any UID less than or equal to `uid_max` will be ignored.
 
 server.logout()
 
