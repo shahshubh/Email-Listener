@@ -48,8 +48,8 @@ async def on_message(message):
     return
   if message.content == '!list-whitelist':
     allEmailsString = ''
-    for i in range(len(constants.allEmails)):
-      allEmailsString += str(i + 1) +". "+constants.allEmails[i]+'\n'
+    for i in range(len(constants.whitelistEmails)):
+      allEmailsString += str(i + 1) +". "+constants.whitelistEmails[i]+'\n'
     await message.channel.send(allEmailsString)
     return 
   if message.content == '!help':
