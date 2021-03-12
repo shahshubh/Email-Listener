@@ -31,28 +31,32 @@ async def listen_new_email(message, uid_max):
           await message.channel.send("Added your email to Placement Folder 😉\n")
         except Exception as error:
           print(error)
-          print(error.args)
         for response in data:
           if isinstance(response, tuple):
             msg = email.message_from_bytes(response[1])
+            print("HERE")
             if(msg.is_multipart()):
               payload = msg.get_payload()[0]
               bodyMsg = payload.get_payload()
             else:
               bodyMsg = msg.get_payload()
 
-            
-            # if(filter_email(msg, message, bodyMsg)):
-            #   await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
-            embedVar = discord.Embed(title="New Email", description=msg["From"], color=random.choice(constants.colors))
-            embedVar.add_field(name="Date", value=msg["Date"], inline=False)
-            embedVar.add_field(name="Subject", value=msg["Subject"], inline=False)
-            embedVar.add_field(name="Body", value=bodyMsg, inline=False)
-            await message.channel.send(embed=embedVar)
-            
-            print(" ===============================")
-            print(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
-            print("===============================\n")
+
+        # if(filter_email(msg, message, bodyMsg)):
+        #   await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
+
+        embedSubject = msg["Subject"] if msg["Subject"] != "" else "(No Subject)"
+        embedBody = bodyMsg if bodyMsg != "" else "(No Body)"
+
+        embedVar = discord.Embed(title="New Email", description=msg["From"], color=random.choice(constants.colors))
+        embedVar.add_field(name="Date", value=msg["Date"], inline=False)
+        embedVar.add_field(name="Subject", value=embedSubject, inline=False)
+        embedVar.add_field(name="Body", value=embedBody, inline=False)
+        await message.channel.send(embed=embedVar)
+        
+        print(" ===============================")
+        print(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
+        print("===============================\n")
     server.logout()
 
 
@@ -60,4 +64,4 @@ async def email_listener(message, uid_max):
   try:
     await listen_new_email(message, uid_max)
   except:
-    await message.channel.send("Some error occured !!")
+    await message.channel.send("Some error occured !! Stopped listening to new email")
