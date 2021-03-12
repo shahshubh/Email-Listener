@@ -1,19 +1,15 @@
 import discord
 import imaplib
-import os
 import email
 import random
-
-colors = [0x00ff00, 0x000000]
-allEmails = ['shahshubh251@gmail.com', 'shahshubh009@gmail.com']
+import constants
 
 imap_ssl_host = 'imap.gmail.com'
 imap_ssl_port = 993
-username = os.getenv('EMAIL')
-password = os.getenv('PASS')
+
 
 async def filter_email(msg, message, bodyMsg):
-  for e in allEmails:
+  for e in constants.allEmails:
     if e in msg['From']:
       return True
   return False
@@ -22,7 +18,7 @@ async def filter_email(msg, message, bodyMsg):
 async def listen_new_email(message, uid_max):
   while 1:
     server = imaplib.IMAP4_SSL(imap_ssl_host, imap_ssl_port)
-    server.login(username, password)
+    server.login(constants.username, constants.password)
     server.select('INBOX')
     result, data = server.search(None, 'UnSeen')
 
@@ -48,7 +44,7 @@ async def listen_new_email(message, uid_max):
             
             # if(filter_email(msg, message, bodyMsg)):
             #   await message.channel.send(msg["Date"]+"\n"+msg["From"]+"\n"+msg["Subject"]+"\n"+bodyMsg)
-            embedVar = discord.Embed(title="New Email", description=msg["From"], color=random.choice(colors))
+            embedVar = discord.Embed(title="New Email", description=msg["From"], color=random.choice(constants.colors))
             embedVar.add_field(name="Date", value=msg["Date"], inline=False)
             embedVar.add_field(name="Subject", value=msg["Subject"], inline=False)
             embedVar.add_field(name="Body", value=bodyMsg, inline=False)
